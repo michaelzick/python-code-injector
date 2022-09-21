@@ -5,9 +5,10 @@ import scapy.all as scapy
 import re
 
 
-def set_load(packet, mod_load):
+def get_modified_packet(packet):
     print('[+] replacing file')
-    packet[scapy.Raw].load = mod_load
+    packet[scapy.Raw].load = re.sub(
+        'Accept-Encoding:.*?\\n\\n', '', str(scapy_packet[scapy.Raw].load))
     del packet[scapy.IP].len
     del packet[scapy.IP].chksum
     del packet[scapy.TCP].chksum
@@ -19,9 +20,7 @@ def process_packet(packet):
     if scapy_packet.haslayer(scapy.Raw) and scapy_packet.haslayer(scapy.TCP):
         if scapy_packet[scapy.TCP].dport == 80:
             print('[+] Request')
-            modified_load = re.sub(
-                'Accept-Encoding:.*?\\n\\n', '', str(scapy_packet[scapy.Raw].load))
-            new_packet = set_load(scapy_packet, modified_load)
+            new_packet = get_modified_packet(scapy_packet)
             packet.set_payload(bytes(new_packet))
         elif scapy_packet[scapy.TCP].sport == 80:
             print('[+] Request')
