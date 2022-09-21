@@ -8,7 +8,7 @@ import re
 def get_modified_packet(packet):
     print('[+] replacing file')
     packet[scapy.Raw].load = re.sub(
-        'Accept-Encoding:.*?\\n\\n', '', str(scapy_packet[scapy.Raw].load))
+        'Accept-Encoding:.*?\\n\\n', '', str(packet[scapy.Raw].load))
     del packet[scapy.IP].len
     del packet[scapy.IP].chksum
     del packet[scapy.TCP].chksum
