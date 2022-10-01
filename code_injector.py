@@ -7,7 +7,7 @@ import re
 
 def set_load(packet, load):
     print('[+] replacing file')
-    packet[scapy.Raw].load = modified_load
+    packet[scapy.Raw].load = load
     del packet[scapy.IP].len
     del packet[scapy.IP].chksum
     del packet[scapy.TCP].chksum
