@@ -22,7 +22,7 @@ def process_packet(packet):
         if scapy_packet[scapy.TCP].dport == 80:
             print('[+] Request')
             load = re.sub(
-                'Accept-Encoding:.*?\\n\\n', '', str(load))
+                'Accept-Encoding:.*?\\r\\n', '', str(load))
         elif scapy_packet[scapy.TCP].sport == 80:
             print('[+] Response')
             print(scapy_packet.show())
